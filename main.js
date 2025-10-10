@@ -77,5 +77,3 @@ const out = lines.join('\n');
 // 7) вивід згідно прапорців
 if (options.display) console.log(out);
 if (options.output) fs.writeFileSync(options.output, out, 'utf8');
-
-// якщо ні -d, ні -o — нічого не виводимо (за вимогою)
