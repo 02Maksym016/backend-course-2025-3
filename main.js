@@ -3,20 +3,26 @@ const fs = require('fs');
 const { program } = require('commander');
 
 program
-  .option('-i, --input <path>', 'path to input json file')
+  .requiredOption('-i, --input <path>', 'path to input json file')
   .option('-o, --output <path>', 'path to output file')
   .option('-d, --display', 'display result in console')
   .option('-s, --survived', 'show only survived passengers')
-  .option('-a, --age', 'include Age in output');
+  .option('-a, --age', 'include Age in output')
+  .configureOutput({ 
+    outputError: (err, write) => {
+      if (err.code === 'commander.missingMandatoryOptionValue') {
+        console.error('Помилка: не вказано обов\'язковий параметр');
+      } else {
+        write(err); 
+      }
+      process.exit(1);
+    }
+  });
 
 program.parse(process.argv);
 const options = program.opts();
 
-// 1) перевірка наявності обов'язкового параметру
-if (!options.input) {
-  console.error('Please, specify input file');
-  process.exit(1);
-}
+
 
 // 2) перевірка існування файлу
 if (!fs.existsSync(options.input)) {
@@ -29,7 +35,7 @@ let raw;
 try {
   raw = fs.readFileSync(options.input, 'utf8');
 } catch (err) {
-  console.error('Cannot find input file');
+  console.error('Cannot read input file:', err.message);
   process.exit(1);
 }
 
